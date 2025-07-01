@@ -1,4 +1,4 @@
-const { Client, Intents, MessageEmbed } = require("discord.js");
+const { Client, Intents, MessageEmbed, AttachmentBuilder  } = require("discord.js");
 const { token } = require('../config.json');
 const client = new Client({
     intents: [
@@ -17,6 +17,7 @@ const footerUrl = "https://yt3.googleusercontent.com/ytc/AIdro_mQDcJrRKtDPylprKX
 const foodJson = require('../food_echo.json');
 
 const axios = require('axios');
+const { getImage, getAttachmentLink } = require('../Manager/GetImage.js');
 
 
 axios.defaults.baseURL = "https://open.neis.go.kr/hub"
@@ -31,5 +32,8 @@ module.exports = {
     광고수,
     footerUrl,
     foodJson,
-    axios
+    axios,
+    AttachmentBuilder,
+    getImage,
+    getAttachmentLink
 }
