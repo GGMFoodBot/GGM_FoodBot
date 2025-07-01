@@ -8,76 +8,64 @@ let today = new Date();
 /**
  * 임베드 형식으로 보내는 메서드
  * @param {string} 급식 조식, 중식, 석식 중 택1
- * @param {interaction} interaction interaction 객체
+ * @param interaction interaction 객체
  */
-async function GetMeal(급식, interaction){
-    let meal;
-    let j = Math.floor(Math.random() * pch.광고수)
+async function GetMeal(급식, interaction) {
     let date;
-
     if (booleanManager.IsDateNull(interaction)) {
         date = functions.MakeDate(interaction).getDate();
-    }
-    else {
+    } else {
         date = interaction.options.getInteger('일자');
     }
-    // 방학 때 사용하는 메시지 전송 코드
+
     if (booleanManager.isVacation) {
-        interaction.reply('2월은 방학이라구요!!')
+        await interaction.reply({content:'2월은 방학이라구요!!', ephemeral: true});
         return;
     }
 
     if (!booleanManager.IsValidDate(date)) {
-        interaction.reply(date + '일은 없어요!')
+        await interaction.reply({content:`${date}일은 없어요!`, ephemeral :true});
         return;
     }
-    // if (booleanManager.isNextDay && booleanManager.isNowMealCommand) {
-    //     date = date + 1;
-    // }
-    await interaction.deferReply();
-    getMeal(date < 10 ? "0" + date : date, 급식).then(async i => {
-        if (i == undefined) {
-            interaction.editReply(급식 + "이 정보에 없습니다.")
-            return;
-        }
-        let image = pch.getImage(pch.광고[j]);
-        let ggmLogo = pch.getImage("ggmLogo.png");
-        console.log(image);
-        console.log(ggmLogo);
-        let mealText = i.toString().replace(/^\d+일\s*/, "");
-        console.log(mealText);
-        meal = mealText.replaceAll(',', '\n\n');
-        let day = functions.MakeDate(interaction);
-        let embed = await functions.MakeEmbed(
-            `:fork_and_knife: ${day.getMonth() + 1}월 ` + date + `일 ${급식}`,
-            '6C72EF',
-            "",
-            [
-                {name: '급식', value: meal},
-                {name: ':newspaper: 광고 문의', value: '디스코드 @gwamegi, @leechangh, @leo82380_, @yogurt31'}
-            ],
-            pch.getAttachmentLink(ggmLogo),
-        );
 
-        (embed).setImage(pch.getAttachmentLink(image));
-        (embed).setFooter({text: '관리자 : 고민수, 이창호, 이상규, 장서윤', iconURL: pch.footerUrl});
-        (embed).setTimestamp();
+    let mealData = getMeal(date < 10 ? "0" + date : date, 급식);
+    if (!mealData) {
+        await interaction.reply({content:`${급식}이 정보에 없습니다.`, ephemeral: true});
+        return;
+    }
 
-        if (!embed) {
-            console.log("error");
-            interaction.editReply("에러가 발생했습니다.")
-            return;
-        }
-        interaction.editReply({embeds: [embed], files: [image, ggmLogo]})
-    });
+    // 이미지 불러오기 등 비동기 작업도 끝낸 후 reply
+    let image = await pch.getImage(pch.광고[Math.floor(Math.random() * pch.광고수)]);
+    let ggmLogo = await pch.getImage("ggmLogo.png");
+    let imageUrl = pch.getAttachmentLink(image);
+    let ggmUrl = pch.getAttachmentLink(ggmLogo);
+
+    let mealText = mealData.replace(/^\d+일\s*/, "").replaceAll(',', '\n\n');
+    let day = functions.MakeDate(interaction);
+
+    let embed = await functions.MakeEmbed(
+        `:fork_and_knife: ${day.getMonth() + 1}월 ${date}일 ${급식}`,
+        '6C72EF',
+        "",
+        [
+            { name: '급식', value: mealText },
+            { name: ':newspaper: 광고 문의', value: '디스코드 @gwamegi, @leechangh, @leo82380_, @yogurt31' }
+        ],
+        ggmUrl
+    );
+    embed.setImage(imageUrl);
+    embed.setFooter({ text: '관리자 : 고민수, 이창호, 이상규, 장서윤', iconURL: pch.footerUrl });
+    embed.setTimestamp();
+    await interaction.reply({ embeds: [embed], files: [image, ggmLogo] });
 }
+
 
 /**
  * 비동기로 급식 불러오는 메서드
  * @param {number} date 날짜
  * @param {string}급식 조식,중식,석식 중 택1
  */
-async function getMeal(date, 급식) {
+function getMeal(date, 급식) {
     let meal = "";
     if (급식 == "조식") {
         meal = pch.foodJson.breakfast[Number(date)];
@@ -126,4 +114,6 @@ module.exports = {
     GetNowMeal,
     GetLunch
 }
+
+
 
