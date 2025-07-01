@@ -34,12 +34,16 @@ async function GetMeal(급식, interaction){
     // if (booleanManager.isNextDay && booleanManager.isNowMealCommand) {
     //     date = date + 1;
     // }
-
+    await interaction.deferReply();
     getMeal(date < 10 ? "0" + date : date, 급식).then(async i => {
         if (i == undefined) {
-            interaction.reply(급식 + "이 정보에 없습니다.")
+            interaction.editReply(급식 + "이 정보에 없습니다.")
             return;
         }
+        let image = pch.getImage(pch.광고[j]);
+        let ggmLogo = pch.getImage("ggmLogo.png");
+        console.log(image);
+        console.log(ggmLogo);
         let mealText = i.toString().replace(/^\d+일\s*/, "");
         console.log(mealText);
         meal = mealText.replaceAll(',', '\n\n');
@@ -52,19 +56,19 @@ async function GetMeal(급식, interaction){
                 {name: '급식', value: meal},
                 {name: ':newspaper: 광고 문의', value: '디스코드 @gwamegi, @leechangh, @leo82380_, @yogurt31'}
             ],
-            'https://ifh.cc/g/TCpVv7.jpg',
+            pch.getAttachmentLink(ggmLogo),
         );
 
-        (embed).setImage(pch.광고[j]);
+        (embed).setImage(pch.getAttachmentLink(image));
         (embed).setFooter({text: '관리자 : 고민수, 이창호, 이상규, 장서윤', iconURL: pch.footerUrl});
         (embed).setTimestamp();
 
         if (!embed) {
             console.log("error");
-            interaction.reply("에러가 발생했습니다.")
+            interaction.editReply("에러가 발생했습니다.")
             return;
         }
-        interaction.reply({embeds: [embed]})
+        interaction.editReply({embeds: [embed], files: [image, ggmLogo]})
     });
 }
 
