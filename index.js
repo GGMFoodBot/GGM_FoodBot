@@ -16,15 +16,24 @@ pch.client.on('ready', () => {
 
 //#endregion
 
+
+
 //#region 명령어
 pch.client.on('interactionCreate', async interaction => {
   if (!interaction.isCommand()) return;
 
   try {
     await Meal.MealCommand(interaction);
+
+  } catch (error) {
+    console.error('Global Handler Error:', error);
+    if (!interaction.deferred && !interaction.replied) {
+      try {
+        console.log("오류 메시지 전송 성공");
+        await interaction.reply({ content: '오류가 발생했어요!', ephemeral: true });
+      } catch (err2) {
+        console.error('Reply 실패:', err2);
+      }
+    }
   }
-  catch (error) {
-    console.error(error);
-    await Bot.SendMsg("고쳐라 이거: " + error);
-  }
-})
+});
