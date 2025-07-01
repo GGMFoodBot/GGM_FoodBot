@@ -45,6 +45,7 @@ async function MealCommand(interaction){
         // interaction.reply(`오늘의 노래 추천해드리도록 하겠습니다.\n${foolsDay.foolsday[rating]}`);
         // return;
         if (booleanManager.IsMealCommand(commandName)) {
+
             await GetMealFunc.GetMeal(commandName, interaction);
         } else if (booleanManager.IsMealHelpCommand(commandName)) {
             await HelpMeal(interaction);
@@ -52,6 +53,10 @@ async function MealCommand(interaction){
             await AdMeal(interaction);
         } else if (booleanManager.IsSchoolMealCommand(commandName)) {
             await GetMealFunc.GetNowMeal(interaction);
+        } else if (booleanManager.IsWorkerMealCommand(commandName)) {
+            var rating = Math.floor(Math.random() * pch.foodJson.로동자.length);
+            interaction.reply(`나의 선택은 ${pch.foodJson.로동자[rating]}! 너다!`);
+            return;
         }
     }
     catch (error) {
