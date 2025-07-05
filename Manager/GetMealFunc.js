@@ -61,7 +61,7 @@ async function GetMeal(급식, interaction) {
 
 
 /**
- * 비동기로 급식 불러오는 메서드
+ * 동기로 급식 불러오는 메서드
  * @param {number} date 날짜
  * @param {string}급식 조식,중식,석식 중 택1
  */
